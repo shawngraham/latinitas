@@ -66,7 +66,7 @@ Each chunk is (a) testable, (b) incremental, (c) leaves no orphan code, (d) avoi
 
 # 4. Code Generation Prompts (Final Series)
 
-## Prompt 1: Project Scaffold and First Test. Complete: [ ]
+## Prompt 1: Project Scaffold and First Test. Complete: [x]
 ```
 You are to implement the initial scaffold for a Python project called `latinepi` for extracting structured data from Latin inscriptions. 
 
@@ -84,7 +84,7 @@ You are to implement the initial scaffold for a Python project called `latinepi`
 - Implement a test in `test/test_cli.py` that runs `cli.py` as a script and asserts "Hello World" is in stdout.
 ```
 
-## Prompt 2: CLI Argument Parsing and Help. Complete: [ ]
+## Prompt 2: CLI Argument Parsing and Help. Complete: [x]
 ```
 Extend `latinepi/cli.py` to parse command-line arguments using `argparse`:
 
@@ -101,7 +101,7 @@ Extend `latinepi/cli.py` to parse command-line arguments using `argparse`:
   - Test that missing a required argument prints an error to `stderr`.
 ```
 
-## Prompt 3: Basic File Reading and Writing. Complete: [ ]
+## Prompt 3: Basic File Reading and Writing. Complete: [x]
 
 ```
 Expand `latinepi/cli.py` to open the input file specified by `--input` and write a given string to the path in `--output`:
