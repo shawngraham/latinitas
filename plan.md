@@ -66,7 +66,7 @@ Each chunk is (a) testable, (b) incremental, (c) leaves no orphan code, (d) avoi
 
 # 4. Code Generation Prompts (Final Series)
 
-## Prompt 1: Project Scaffold and First Test
+## Prompt 1: Project Scaffold and First Test. Complete: [ ]
 ```
 You are to implement the initial scaffold for a Python project called `latinepi` for extracting structured data from Latin inscriptions. 
 
@@ -84,7 +84,7 @@ You are to implement the initial scaffold for a Python project called `latinepi`
 - Implement a test in `test/test_cli.py` that runs `cli.py` as a script and asserts "Hello World" is in stdout.
 ```
 
-## Prompt 2: CLI Argument Parsing and Help
+## Prompt 2: CLI Argument Parsing and Help. Complete: [ ]
 ```
 Extend `latinepi/cli.py` to parse command-line arguments using `argparse`:
 
@@ -101,7 +101,7 @@ Extend `latinepi/cli.py` to parse command-line arguments using `argparse`:
   - Test that missing a required argument prints an error to `stderr`.
 ```
 
-## Prompt 3: Basic File Reading and Writing
+## Prompt 3: Basic File Reading and Writing. Complete: [ ]
 
 ```
 Expand `latinepi/cli.py` to open the input file specified by `--input` and write a given string to the path in `--output`:
@@ -118,7 +118,7 @@ Expand `latinepi/cli.py` to open the input file specified by `--input` and write
   - Providing good input and output args results in the output file containing the placeholder string and a confirmation in stdout.
 ```
 
-## Prompt 4: Parsing CSV/JSON Input With Unit Tests
+## Prompt 4: Parsing CSV/JSON Input With Unit Tests. Complete: [ ]
 
 ```
 In `latinepi/parser.py`, implement functions to read a CSV or JSON file containing inscriptions.
@@ -133,7 +133,7 @@ In `latinepi/parser.py`, implement functions to read a CSV or JSON file containi
   - Test with malformed CSV/JSON and confirm errors are raised.
 ```
 
-## Prompt 5: Single Record Parsing/NER Extraction Stub
+## Prompt 5: Single Record Parsing/NER Extraction Stub. Complete: [ ]
 
 ```
 In `parser.py`, add a function `extract_entities(text)` which takes inscription text and returns a hardcoded dict simulating entities (e.g., {'nomen': {'value': 'Iulius', 'confidence': 0.95}}):
@@ -150,7 +150,7 @@ In `parser.py`, add a function `extract_entities(text)` which takes inscription 
 - Write CLI test to check entire process: input file → entity extraction → correct output structure.
 ```
 
-## Prompt 6: Batch Processing Logic With Real File I/O
+## Prompt 6: Batch Processing Logic With Real File I/O. Complete: [ ]
 
 ```
 Update CLI and `parser.py` to:
@@ -163,7 +163,7 @@ Update CLI and `parser.py` to:
 - Test with both JSON and CSV inputs, and varied record counts.
 ```
 
-## Prompt 7: Integrate latin-bert Model, Minimal NER
+## Prompt 7: Integrate latin-bert Model, Minimal NER. Complete: [ ]
 
 ```
 Switch `extract_entities` in `parser.py` from hardcoded results to integrating the real pretrained `latin-bert` model using HuggingFace Transformers:
@@ -178,7 +178,7 @@ Switch `extract_entities` in `parser.py` from hardcoded results to integrating t
 **Note:** Performance/memory to be kept in mind; avoid loading model more than once.
 ```
 
-## Prompt 8: Confidence/Threshold Logic
+## Prompt 8: Confidence/Threshold Logic. Complete: [ ]
 
 ```
 Add confidence threshold logic to `extract_entities` and wire it up to CLI arguments:
@@ -195,7 +195,7 @@ Add confidence threshold logic to `extract_entities` and wire it up to CLI argum
 - CLI integration test: run with and without `--flag-ambiguous` and different thresholds, verify output.
 ```
 
-## Prompt 9: Output Formatting, JSON/CSV Choice
+## Prompt 9: Output Formatting, JSON/CSV Choice. Complete: [ ]
 
 ```
 Expand the CLI to write output as either flat JSON or CSV according to the `--output-format` flag.
@@ -209,7 +209,7 @@ Expand the CLI to write output as either flat JSON or CSV according to the `--ou
 - Given controlled input and entity extraction, produce JSON and CSV and check structure and values.
 ```
 
-## Prompt 10: EDH Download Utility (Basic Fetch and Save)
+## Prompt 10: EDH Download Utility (Basic Fetch and Save). Complete: [ ]
 ```
 Implement the EDH download utility in `latinepi/edh_utils.py`.
 
@@ -230,7 +230,7 @@ Implement the EDH download utility in `latinepi/edh_utils.py`.
     - Test CLI invocation with EDH flags, and output file.
 ```
 
-## Prompt 11: CLI Argument Validation, User Guidance, and Error Handling
+## Prompt 11: CLI Argument Validation, User Guidance, and Error Handling. Complete: [ ]
 
 ```
 Enhance CLI UX and robustness in `cli.py`:
@@ -249,7 +249,7 @@ Enhance CLI UX and robustness in `cli.py`:
 - Expand and test error conditions (missing args, invalid combos, etc) and correct messages/codes.
 ```
 
-## Prompt 12: End-to-End Integration and Full CLI Test Suite
+## Prompt 12: End-to-End Integration and Full CLI Test Suite. Complete: [ ]
 
 ```
 Write an integration test suite covering full workflow scenarios:
@@ -265,7 +265,7 @@ Write an integration test suite covering full workflow scenarios:
 **Tip:** All CLI paths exercised, ensuring no orphan code or broken behavior.
 ```
 
-## Prompt 13: Project Documentation and Usage Examples
+## Prompt 13: Project Documentation and Usage Examples. Complete: [ ]
 
 ```
 Write a `README.md` for the project and include documentation in the CLI help text:
@@ -281,7 +281,7 @@ Write a `README.md` for the project and include documentation in the CLI help te
 - (Manual) Confirm that all documented commands function as described in test or dev environment.
 ```
 
-## Prompt 14: Final Wiring and Cleanup
+## Prompt 14: Final Wiring and Cleanup. Complete: [ ]
 
 ```
 Review and wire up all modules:
@@ -294,7 +294,7 @@ Review and wire up all modules:
 - Re-run all tests to ensure they pass.
 ```
 
-## Prompt 15: Continuous Integration Scaffold
+## Prompt 15: Continuous Integration Scaffold. Complete: [ ]
 
 ```
 Add a basic configuration for automated testing (optional):
