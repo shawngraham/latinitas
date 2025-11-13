@@ -555,6 +555,7 @@ See repository license file for details.
 - **latin-bert Model**: https://github.com/dbamman/latin-bert
 - **EDH Database**: https://edh.ub.uni-heidelberg.de/
 - **EDH API**: https://edh.ub.uni-heidelberg.de/data/api
+- **EDH_ETL**: https://github.com/sdam-au/EDH_ETL/tree/master
 - **CLTK**: https://github.com/cltk/cltk
 
 ## Citation
