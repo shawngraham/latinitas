@@ -124,7 +124,7 @@ class LatinMorphologyAnalyzer:
             features = word.features
 
             # Look for genitive case proper nouns
-            if (features.get('Case') == 'Gen' and
+            if (features.case == 'Gen' and
                 hasattr(word, 'pos') and word.pos in ['PROPN', 'NOUN']):
 
                 # Store genitive name
@@ -172,7 +172,7 @@ class LatinMorphologyAnalyzer:
             features = word.features
 
             # Look for nominative case proper nouns
-            if (features.get('Case') == 'Nom' and
+            if (features.case == 'Nom' and
                 hasattr(word, 'pos') and word.pos in ['PROPN', 'NOUN']):
 
                 nominative_names.append(word.string)
@@ -223,7 +223,7 @@ class LatinMorphologyAnalyzer:
             features = word.features
 
             # Look for dative case
-            if features.get('Case') == 'Dat':
+            if features.case == 'Dat':
                 # Check if lemma matches known relationships
                 if hasattr(word, 'lemma') and word.lemma:
                     lemma = word.lemma.lower()
@@ -257,7 +257,7 @@ class LatinMorphologyAnalyzer:
             features = word.features
 
             # Look for ablative case proper nouns (places)
-            if (features.get('Case') == 'Abl' and
+            if (features.case == 'Abl' and
                 hasattr(word, 'pos') and word.pos == 'PROPN'):
 
                 ablative_places.append(word.string)
@@ -298,9 +298,9 @@ class LatinMorphologyAnalyzer:
 
             if hasattr(word, 'features') and word.features:
                 features = word.features
-                word_info['case'] = features.get('Case')
-                word_info['gender'] = features.get('Gender')
-                word_info['number'] = features.get('Number')
+                word_info['case'] = features.case
+                word_info['gender'] = features.gender
+                word_info['number'] = features.number
 
             result.append(word_info)
 
@@ -331,7 +331,7 @@ class LatinMorphologyAnalyzer:
             if not hasattr(word, 'features') or not word.features:
                 continue
 
-            if word.features.get('Case') == expected_case:
+            if word.features.case == expected_case:
                 return (True, 0.10)  # Boost confidence by 10%
 
         return (False, -0.10)  # Reduce confidence by 10%
