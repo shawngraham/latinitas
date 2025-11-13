@@ -249,7 +249,7 @@ Enhance CLI UX and robustness in `cli.py`:
 - Expand and test error conditions (missing args, invalid combos, etc) and correct messages/codes.
 ```
 
-## Prompt 12: End-to-End Integration and Full CLI Test Suite. Complete: [ ]
+## Prompt 12: End-to-End Integration and Full CLI Test Suite. Complete: [x]
 
 ```
 Write an integration test suite covering full workflow scenarios:

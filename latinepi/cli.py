@@ -246,7 +246,19 @@ def main():
         else:  # csv
             import csv
             if results:
-                fieldnames = results[0].keys()
+                # Collect all unique fieldnames from all records
+                # (different records may have different fields due to threshold filtering)
+                all_fieldnames = set()
+                for result in results:
+                    all_fieldnames.update(result.keys())
+
+                # Sort fieldnames for consistent column ordering
+                # inscription_id first, then alphabetically
+                fieldnames = sorted(all_fieldnames)
+                if 'inscription_id' in fieldnames:
+                    fieldnames.remove('inscription_id')
+                    fieldnames = ['inscription_id'] + fieldnames
+
                 with open(output_path, 'w', encoding='utf-8', newline='') as f:
                     writer = csv.DictWriter(f, fieldnames=fieldnames)
                     writer.writeheader()
