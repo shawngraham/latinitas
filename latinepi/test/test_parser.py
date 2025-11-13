@@ -1,15 +1,172 @@
 """
 Tests for the parser module.
 """
+import json
+import tempfile
 import unittest
+from pathlib import Path
+
+from latinepi.parser import read_inscriptions
 
 
 class TestParser(unittest.TestCase):
     """Test cases for the parser functionality."""
 
-    def test_placeholder(self):
-        """Placeholder test."""
-        self.assertTrue(True)
+    def setUp(self):
+        """Set up test fixtures."""
+        self.temp_dir = tempfile.mkdtemp()
+        self.temp_path = Path(self.temp_dir)
+
+    def tearDown(self):
+        """Clean up test fixtures."""
+        import shutil
+        if self.temp_path.exists():
+            shutil.rmtree(self.temp_path)
+
+    def test_read_csv_single_row(self):
+        """Test reading a CSV file with a single inscription."""
+        csv_file = self.temp_path / "test.csv"
+        csv_content = """id,text,location
+1,D M GAIVS IVLIVS CAESAR,Rome"""
+        csv_file.write_text(csv_content)
+
+        result = read_inscriptions(str(csv_file))
+
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], '1')
+        self.assertEqual(result[0]['text'], 'D M GAIVS IVLIVS CAESAR')
+        self.assertEqual(result[0]['location'], 'Rome')
+
+    def test_read_csv_multiple_rows(self):
+        """Test reading a CSV file with multiple inscriptions."""
+        csv_file = self.temp_path / "test.csv"
+        csv_content = """id,text,location
+1,D M GAIVS IVLIVS CAESAR,Rome
+2,D M MARCIA TVRPILIA,Pompeii
+3,HIC SITUS EST,Ostia"""
+        csv_file.write_text(csv_content)
+
+        result = read_inscriptions(str(csv_file))
+
+        self.assertEqual(len(result), 3)
+        self.assertEqual(result[0]['id'], '1')
+        self.assertEqual(result[1]['text'], 'D M MARCIA TVRPILIA')
+        self.assertEqual(result[2]['location'], 'Ostia')
+
+    def test_read_json_list_of_objects(self):
+        """Test reading a JSON file with a list of inscription objects."""
+        json_file = self.temp_path / "test.json"
+        json_content = [
+            {"id": 1, "text": "D M GAIVS IVLIVS CAESAR", "location": "Rome"},
+            {"id": 2, "text": "D M MARCIA TVRPILIA", "location": "Pompeii"}
+        ]
+        json_file.write_text(json.dumps(json_content))
+
+        result = read_inscriptions(str(json_file))
+
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 2)
+        self.assertEqual(result[0]['id'], 1)
+        self.assertEqual(result[0]['text'], 'D M GAIVS IVLIVS CAESAR')
+        self.assertEqual(result[1]['location'], 'Pompeii')
+
+    def test_read_json_single_object(self):
+        """Test reading a JSON file with a single inscription object."""
+        json_file = self.temp_path / "test.json"
+        json_content = {"id": 1, "text": "D M GAIVS IVLIVS CAESAR", "location": "Rome"}
+        json_file.write_text(json.dumps(json_content))
+
+        result = read_inscriptions(str(json_file))
+
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], 1)
+        self.assertEqual(result[0]['text'], 'D M GAIVS IVLIVS CAESAR')
+
+    def test_file_not_found(self):
+        """Test that FileNotFoundError is raised for non-existent file."""
+        with self.assertRaises(FileNotFoundError) as context:
+            read_inscriptions("/nonexistent/file.csv")
+        self.assertIn("File not found", str(context.exception))
+
+    def test_unsupported_file_format(self):
+        """Test that ValueError is raised for unsupported file formats."""
+        txt_file = self.temp_path / "test.txt"
+        txt_file.write_text("some text")
+
+        with self.assertRaises(ValueError) as context:
+            read_inscriptions(str(txt_file))
+        self.assertIn("Unsupported file format", str(context.exception))
+
+    def test_malformed_json(self):
+        """Test that ValueError is raised for malformed JSON."""
+        json_file = self.temp_path / "bad.json"
+        json_file.write_text('{"id": 1, "text": "incomplete"')  # Missing closing brace
+
+        with self.assertRaises(ValueError) as context:
+            read_inscriptions(str(json_file))
+        self.assertIn("JSON parsing error", str(context.exception))
+
+    def test_json_with_invalid_structure(self):
+        """Test that ValueError is raised for JSON with wrong structure."""
+        json_file = self.temp_path / "bad.json"
+        json_file.write_text('"just a string"')  # Not a dict or list
+
+        with self.assertRaises(ValueError) as context:
+            read_inscriptions(str(json_file))
+        self.assertIn("JSON must be a list of objects or a single object", str(context.exception))
+
+    def test_json_list_with_non_dict_items(self):
+        """Test that ValueError is raised for JSON list containing non-dict items."""
+        json_file = self.temp_path / "bad.json"
+        json_content = [{"id": 1}, "string", {"id": 2}]  # Contains a string
+        json_file.write_text(json.dumps(json_content))
+
+        with self.assertRaises(ValueError) as context:
+            read_inscriptions(str(json_file))
+        self.assertIn("JSON list must contain only dictionaries", str(context.exception))
+
+    def test_empty_csv(self):
+        """Test that ValueError is raised for empty CSV file."""
+        csv_file = self.temp_path / "empty.csv"
+        csv_file.write_text("id,text,location\n")  # Header only, no data
+
+        with self.assertRaises(ValueError) as context:
+            read_inscriptions(str(csv_file))
+        self.assertIn("empty or contains no data rows", str(context.exception))
+
+    def test_csv_with_special_characters(self):
+        """Test reading CSV with special characters and quotes."""
+        csv_file = self.temp_path / "special.csv"
+        csv_content = '''id,text,location
+1,"D M, GAIVS ""IULIUS"" CAESAR","Rome, Italy"'''
+        csv_file.write_text(csv_content)
+
+        result = read_inscriptions(str(csv_file))
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['text'], 'D M, GAIVS "IULIUS" CAESAR')
+        self.assertEqual(result[0]['location'], 'Rome, Italy')
+
+    def test_json_with_nested_fields(self):
+        """Test reading JSON with various field types."""
+        json_file = self.temp_path / "test.json"
+        json_content = {
+            "id": 1,
+            "text": "D M GAIVS IVLIVS CAESAR",
+            "age": 57,
+            "location": "Rome",
+            "verified": True
+        }
+        json_file.write_text(json.dumps(json_content))
+
+        result = read_inscriptions(str(json_file))
+
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]['id'], 1)
+        self.assertEqual(result[0]['age'], 57)
+        self.assertEqual(result[0]['verified'], True)
 
 
 if __name__ == "__main__":

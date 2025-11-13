@@ -118,7 +118,7 @@ Expand `latinepi/cli.py` to open the input file specified by `--input` and write
   - Providing good input and output args results in the output file containing the placeholder string and a confirmation in stdout.
 ```
 
-## Prompt 4: Parsing CSV/JSON Input With Unit Tests. Complete: [ ]
+## Prompt 4: Parsing CSV/JSON Input With Unit Tests. Complete: [x]
 
 ```
 In `latinepi/parser.py`, implement functions to read a CSV or JSON file containing inscriptions.
