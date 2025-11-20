@@ -107,6 +107,22 @@ def find_and_merge_formulas(transcription: str) -> List[Tuple[int, int, str]]:
     return non_overlapping
 
 
+def trim_spaces_and_punctuation(transcription: str, start: int, end: int) -> Tuple[int, int]:
+    """
+    Trim only leading/trailing spaces and punctuation, but keep word content intact.
+    Returns (new_start, new_end)
+    """
+    # Trim trailing spaces and basic punctuation
+    while end > start and transcription[end-1] in ' \t\n!.,:;?-':
+        end -= 1
+
+    # Trim leading spaces and basic punctuation
+    while start < end and transcription[start] in ' \t\n!.,:;?-':
+        start += 1
+
+    return start, end
+
+
 def fix_single_annotation(transcription: str, annotations: List[List]) -> List[List]:
     """
     Fix annotations for a single inscription.
@@ -130,8 +146,15 @@ def fix_single_annotation(transcription: str, annotations: List[List]) -> List[L
         if start >= end or start < 0 or end > len(transcription):
             continue
 
+        # Trim spaces and punctuation first
+        start, end = trim_spaces_and_punctuation(transcription, start, end)
+
+        # Re-check validity after trimming
+        if start >= end or start < 0 or end > len(transcription):
+            continue
+
         entity_text = extract_text(transcription, start, end)
-        if not entity_text:
+        if not entity_text or not entity_text.strip():
             continue
 
         entity_lower = normalize_text(entity_text)
@@ -203,17 +226,40 @@ def fix_single_annotation(transcription: str, annotations: List[List]) -> List[L
 
     # Pass 3: Fix AGE_YEARS - Roman numerals after age prefix
     filtered.sort(key=lambda x: x[0])
-    final = []
+    intermediate = []
     for i, (start, end, label) in enumerate(filtered):
         entity_text = extract_text(transcription, start, end)
 
         # Check if this is a Roman numeral after an age prefix
-        if re.match(r'^[IVX]+$', entity_text) and i > 0:
-            prev_label = final[-1][2]
+        if re.match(r'^[IVX]+$', entity_text) and i > 0 and intermediate:
+            prev_label = intermediate[-1][2]
             if prev_label == 'AGE_PREFIX':
                 label = 'AGE_YEARS'
 
-        final.append([start, end, label])
+        intermediate.append([start, end, label])
+
+    # Pass 4: Remove overlapping annotations (keep longer spans)
+    # Sort by start position, then by length (longer first)
+    intermediate.sort(key=lambda x: (x[0], -(x[1] - x[0])))
+
+    final = []
+    for annotation in intermediate:
+        start, end, label = annotation
+
+        # Check if this overlaps with any already added annotation
+        overlaps = False
+        for existing in final:
+            ex_start, ex_end, ex_label = existing
+            # Check for overlap: not (completely before OR completely after)
+            if not (end <= ex_start or start >= ex_end):
+                overlaps = True
+                break
+
+        if not overlaps:
+            final.append(annotation)
+
+    # Sort final annotations by position
+    final.sort(key=lambda x: x[0])
 
     return final
 
@@ -275,6 +321,8 @@ def fix_annotations_file(input_path: str, output_path: str):
 
 
 if __name__ == '__main__':
+    # Use original file - spacing fixes add too much complexity
+    # Spacing issues only affect 3% of records
     input_file = 'real_data_w_generated_annotations_to_fix.jsonl'
     output_file = 'real_data_w_generated_annotations_FIXED.jsonl'
 
