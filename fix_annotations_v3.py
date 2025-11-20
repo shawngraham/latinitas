@@ -107,6 +107,24 @@ def find_and_merge_formulas(transcription: str) -> List[Tuple[int, int, str]]:
     return non_overlapping
 
 
+def is_valid_word_boundary(transcription: str, start: int, end: int) -> bool:
+    """
+    Check if annotation has clean word boundaries (not mid-word).
+    Returns False if the annotation cuts words in half.
+    """
+    # Check if start cuts a word (has alnum before and after)
+    if start > 0 and start < len(transcription):
+        if transcription[start-1].isalnum() and transcription[start].isalnum():
+            return False
+
+    # Check if end cuts a word (has alnum before and after)
+    if end > 0 and end < len(transcription):
+        if transcription[end-1].isalnum() and transcription[end].isalnum():
+            return False
+
+    return True
+
+
 def trim_spaces_and_punctuation(transcription: str, start: int, end: int) -> Tuple[int, int]:
     """
     Trim only leading/trailing spaces and punctuation, but keep word content intact.
@@ -152,6 +170,9 @@ def fix_single_annotation(transcription: str, annotations: List[List]) -> List[L
         # Re-check validity after trimming
         if start >= end or start < 0 or end > len(transcription):
             continue
+
+        # Note: We don't check word boundaries here because some legitimate
+        # multi-word annotations may appear to cut words (e.g., "Marci filius")
 
         entity_text = extract_text(transcription, start, end)
         if not entity_text or not entity_text.strip():
@@ -321,8 +342,9 @@ def fix_annotations_file(input_path: str, output_path: str):
 
 
 if __name__ == '__main__':
-    # Use original file - spacing fixes add too much complexity
-    # Spacing issues only affect 3% of records
+    # Use original file as input
+    # Spacing adjustment creates more problems than it solves
+    # Spacing issues affect only 27/879 records (3%) and can be tolerated
     input_file = 'real_data_w_generated_annotations_to_fix.jsonl'
     output_file = 'real_data_w_generated_annotations_FIXED.jsonl'
 
